@@ -1,0 +1,46 @@
+{
+  "todos": [
+    {
+      "id": "1725217380735",
+      "shoppingItem": "Nike Men's Dunk High Black/White Sneaker Nike R 2,599.95",
+      "image": "https://example.com/images/nike_dunk_high_black_white.jpg"
+    },
+    {
+      "id": "1725217389436",
+      "shoppingItem": "heyy",
+      "image": "https://example.com/images/sneaker_placeholder.jpg"
+    },
+    {
+      "id": "1725217402085",
+      "shoppingItem": "tgtttttttttt",
+      "image": "https://example.com/images/sneaker_placeholder.jpg"
+    },
+    {
+      "id": "1725217402763",
+      "shoppingItem": "",
+      "image": "https://example.com/images/sneaker_placeholder.jpg"
+    },
+    {
+      "id": "1725218719378",
+      "shoppingItem": "",
+      "image": "https://example.com/images/sneaker_placeholder.jpg"
+    },
+    {
+      "id": "1725218721347",
+      "shoppingItem": "",
+      "image": "https://example.com/images/sneaker_placeholder.jpg"
+    }
+  ],
+  "user": [
+    {
+      "id": "58a1",
+      "name": "ney",
+      "password": "123"
+    },
+    {
+      "id": "e1fe",
+      "name": "newa",
+      "password": "12"
+    }
+  ]
+}

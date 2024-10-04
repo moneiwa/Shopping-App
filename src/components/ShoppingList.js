@@ -1,19 +1,18 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Change this
 import {
   fetchShoppingItems,
   deleteShoppingItemFromServer,
   editShoppingItemOnServer,
   addShoppingItemToServer,
   logoutUser,
-  addToCart,
 } from "../redux/shoppingListReducer";
-import Cart from "./Cart";
 
 function ShoppingList() {
   const shoppingList = useSelector(state => state.shoppingList.items);
-  const cart = useSelector(state => state.shoppingList.cart); 
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Change this
   const [editingItem, setEditingItem] = useState(null);
   const [editedText, setEditedText] = useState("");
   const [newItemText, setNewItemText] = useState("");
@@ -40,20 +39,17 @@ function ShoppingList() {
     setEditingItem(null);
   };
 
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/login'); // Change this
+  };
+
   const handleAddItem = (e) => {
     e.preventDefault();
     if (newItemText.trim()) {
       dispatch(addShoppingItemToServer({ shoppingItem: newItemText }));
       setNewItemText("");
     }
-  };
-
-  const handleLogout = () => {
-    dispatch(logoutUser());
-  };
-
-  const handleAddToCart = (item) => {
-    dispatch(addToCart(item));
   };
 
   return (
@@ -95,10 +91,8 @@ function ShoppingList() {
                 ) : (
                   <>
                     <p className='card-text'>{item.shoppingItem}</p>
-                    <p className='card-price'>{item.price}</p>
                     <button onClick={() => handleEdit(item)} className='card-button'>Edit</button>
                     <button onClick={() => handleDelete(item.id)} className='card-button'>Delete</button>
-                    <button onClick={() => handleAddToCart(item)} className='card-button'>Add to Cart</button> 
                   </>
                 )}
               </div>
@@ -106,8 +100,6 @@ function ShoppingList() {
           ))
         )}
       </div>
-
-      <Cart />
     </div>
   );
 }

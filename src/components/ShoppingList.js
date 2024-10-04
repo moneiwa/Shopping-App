@@ -1,154 +1,22 @@
-// // import { useSelector, useDispatch } from "react-redux";
-// // import { useEffect, useState } from "react";
-// // import {
-// //   fetchShoppingItems,
-// //   deleteShoppingItemFromServer,
-// //   editShoppingItemOnServer,
-// // } from "../redux/shoppingListReducer";
-
-// // function ShoppingList() {
-// //   const shoppingList = useSelector((state) => state.shoppingList);
-// //   const dispatch = useDispatch();
-// //   const [editingItem, setEditingItem] = useState(null);
-// //   const [editedText, setEditedText] = useState("");
-
-// //   useEffect(() => {
-// //     dispatch(fetchShoppingItems());
-// //   }, [dispatch]);
-
-// //   useEffect(() => {
-// //     console.log("Shopping List:", shoppingList);
-// //   }, [shoppingList]);
-
-// //   const handleDelete = (id) => {
-// //     dispatch(deleteShoppingItemFromServer(id));
-// //   };
-
-// //   const handleEdit = (item) => {
-// //     setEditingItem(item.id);
-// //     setEditedText(item.shoppingItem);
-// //   };
-
-// //   const handleSaveEdit = (id) => {
-// //     dispatch(editShoppingItemOnServer({ id, shoppingItem: editedText }));
-// //     setEditingItem(null);
-// //   };
-
-// //   return (
-// //     <ul>
-// //       {shoppingList.length === 0 ? (
-// //         <li>No items to display</li>
-// //       ) : (
-// //         shoppingList.map((item) => (
-// //           <div key={item.id}>
-// //             {editingItem === item.id ? (
-// //               <>
-// //                 <input
-// //                   type="text"
-// //                   value={editedText}
-// //                   onChange={(e) => setEditedText(e.target.value)}
-// //                 />
-// //                 <button onClick={() => handleSaveEdit(item.id)}>Save</button>
-// //               </>
-// //             ) : (
-// //               <>
-// //                 <li>{item.shoppingItem}</li>
-// //                 <button onClick={() => handleEdit(item)}>Edit</button>
-// //                 <button onClick={() => handleDelete(item.id)}>Delete</button>
-// //               </>
-// //             )}
-// //           </div>
-// //         ))
-// //       )}
-// //     </ul>
-// //   );
-// // }
-
-// // export default ShoppingList;
-
-// import { useSelector, useDispatch } from "react-redux";
-// import { useEffect, useState } from "react";
-// import {
-//   fetchShoppingItems,
-//   deleteShoppingItemFromServer,
-//   editShoppingItemOnServer,
-// } from "../redux/shoppingListReducer";
-
-// function ShoppingList() {
-//   const shoppingList = useSelector((state) => state.shoppingList);
-//   const dispatch = useDispatch();
-//   const [editingItem, setEditingItem] = useState(null);
-//   const [editedText, setEditedText] = useState("");
-
-//   useEffect(() => {
-//     dispatch(fetchShoppingItems());
-//   }, [dispatch]);
-
-//   const handleDelete = (id) => {
-//     dispatch(deleteShoppingItemFromServer(id));
-//   };
-
-//   const handleEdit = (item) => {
-//     setEditingItem(item.id);
-//     setEditedText(item.shoppingItem);
-//   };
-
-//   const handleSaveEdit = (id) => {
-//     dispatch(editShoppingItemOnServer({ id, shoppingItem: editedText }));
-//     setEditingItem(null);
-//   };
-
-//   const handleCancelEdit = () => {
-//     setEditingItem(null);
-//   };
-
-//   return (
-//     <ul>
-//       {shoppingList.length === 0 ? (
-//         <li>No items to display</li>
-//       ) : (
-//         shoppingList.map((item) => (
-//           <div key={item.id} style={{ marginBottom: '20px' }}>
-//             {item.image && <img src={item.image} alt={item.shoppingItem} style={{ width: '100px', height: '100px', objectFit: 'cover' }} />}
-//             {editingItem === item.id ? (
-//               <>
-//                 <input
-//                   type="text"
-//                   value={editedText}
-//                   onChange={(e) => setEditedText(e.target.value)}
-//                 />
-//                 <button onClick={() => handleSaveEdit(item.id)}>Save</button>
-//                 <button onClick={handleCancelEdit}>Cancel</button>
-//               </>
-//             ) : (
-//               <>
-//                 <li>{item.shoppingItem}</li>
-//                 <button onClick={() => handleEdit(item)}>Edit</button>
-//                 <button onClick={() => handleDelete(item.id)}>Delete</button>
-//               </>
-//             )}
-//           </div>
-//         ))
-//       )}
-//     </ul>
-//   );
-// }
-
-// export default ShoppingList;
-
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import {
   fetchShoppingItems,
   deleteShoppingItemFromServer,
   editShoppingItemOnServer,
+  addShoppingItemToServer,
+  logoutUser,
+  addToCart,
 } from "../redux/shoppingListReducer";
+import Cart from "./Cart";
 
 function ShoppingList() {
-  const shoppingList = useSelector(state => state.shoppingList);
+  const shoppingList = useSelector(state => state.shoppingList.items);
+  const cart = useSelector(state => state.shoppingList.cart); 
   const dispatch = useDispatch();
   const [editingItem, setEditingItem] = useState(null);
   const [editedText, setEditedText] = useState("");
+  const [newItemText, setNewItemText] = useState("");
 
   useEffect(() => {
     dispatch(fetchShoppingItems());
@@ -172,8 +40,39 @@ function ShoppingList() {
     setEditingItem(null);
   };
 
+  const handleAddItem = (e) => {
+    e.preventDefault();
+    if (newItemText.trim()) {
+      dispatch(addShoppingItemToServer({ shoppingItem: newItemText }));
+      setNewItemText("");
+    }
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+  };
+
+  const handleAddToCart = (item) => {
+    dispatch(addToCart(item));
+  };
+
   return (
     <div className='list'>
+      <button onClick={handleLogout} className='logout-button'>
+        Logout
+      </button>
+
+      <form onSubmit={handleAddItem} className='add-item-form'>
+        <input
+          type="text"
+          value={newItemText}
+          onChange={(e) => setNewItemText(e.target.value)}
+          placeholder="Add a new item"
+          className='add-item-input'
+        />
+        <button type="submit" className='add-item-button'>Add</button>
+      </form>
+
       <div className='card-container'>
         {shoppingList.length === 0 ? (
           <p>No items to display</p>
@@ -196,8 +95,10 @@ function ShoppingList() {
                 ) : (
                   <>
                     <p className='card-text'>{item.shoppingItem}</p>
+                    <p className='card-price'>{item.price}</p>
                     <button onClick={() => handleEdit(item)} className='card-button'>Edit</button>
                     <button onClick={() => handleDelete(item.id)} className='card-button'>Delete</button>
+                    <button onClick={() => handleAddToCart(item)} className='card-button'>Add to Cart</button> 
                   </>
                 )}
               </div>
@@ -205,6 +106,8 @@ function ShoppingList() {
           ))
         )}
       </div>
+
+      <Cart />
     </div>
   );
 }

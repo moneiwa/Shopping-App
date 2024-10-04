@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Thunks for asynchronous actions
+// Thunks
 export const fetchShoppingItems = createAsyncThunk(
   "shoppingList/fetchShoppingItems",
   async () => {
@@ -47,30 +47,52 @@ export const editShoppingItemOnServer = createAsyncThunk(
   }
 );
 
-const initialState = [];
+const initialState = {
+  items: [],
+  cart: [],
+};
 
 const shoppingSlice = createSlice({
   name: "shoppingList",
   initialState,
-  reducers: {},
+  reducers: {
+    logoutUser: (state) => {
+      return initialState; 
+    },
+    addToCart: (state, action) => {
+      const item = action.payload;
+      const existingItem = state.cart.find(cartItem => cartItem.id === item.id);
+      if (!existingItem) {
+        state.cart.push(item);
+      }
+    },
+    removeFromCart: (state, action) => {
+      const itemId = action.payload.id;
+      state.cart = state.cart.filter(item => item.id !== itemId);
+    },
+    clearCart: (state) => {
+      state.cart = [];
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchShoppingItems.fulfilled, (state, action) => {
-        return action.payload;
+        state.items = action.payload;
       })
       .addCase(addShoppingItemToServer.fulfilled, (state, action) => {
-        state.push(action.payload);
+        state.items.push(action.payload); 
       })
       .addCase(deleteShoppingItemFromServer.fulfilled, (state, action) => {
-        return state.filter((item) => item.id !== action.payload);
+        state.items = state.items.filter((item) => item.id !== action.payload);
       })
       .addCase(editShoppingItemOnServer.fulfilled, (state, action) => {
-        const index = state.findIndex((item) => item.id === action.payload.id);
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
         if (index !== -1) {
-          state[index] = action.payload;
+          state.items[index] = action.payload;
         }
       });
   },
 });
 
+export const { logoutUser, addToCart, removeFromCart, clearCart } = shoppingSlice.actions;
 export default shoppingSlice.reducer;
